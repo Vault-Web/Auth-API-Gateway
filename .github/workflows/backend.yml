@@ -1,0 +1,28 @@
+name: Backend CI
+
+on:
+  push:
+    paths:
+      - "apigateway/**"
+      - ".github/workflows/backend.yml"
+  pull_request:
+    paths:
+      - "apigateway/**"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Set up Java
+        uses: actions/setup-java@v5
+        with:
+          distribution: "temurin"
+          java-version: "21"
+          cache: "maven"
+
+      - name: Build with Maven
+        working-directory: ./apigateway
+        run: ./mvnw verify -DskipTests
