@@ -1,26 +1,23 @@
 package vaultweb.apigateway.model;
 
 import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class User {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    private String name;
+    private String email;
+    private String password;
 
-    int id;
-    String name;
-    String email;
-    String password;
-
-    public User(
-        final int id,
-        final String name,
-        final String email,
-        final String password
-    ) {
-        this.id = id;
-        this.name = name;
-        this.email = email;
-        this.password = password;
-    }
 }
