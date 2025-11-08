@@ -1,30 +1,26 @@
 package vaultweb.apigateway.model;
 
 import jakarta.persistence.Entity;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.Data;
 
 @Entity
+@Data
 public class User {
 
-	@Getter
-	@Setter
-	int id;
-	@Getter
-	@Setter
-	String name;
-	@Getter
-	@Setter
-	String email;
-	@Getter
-	@Setter
-	String password;
+    int id;
+    String name;
+    String email;
+    String password;
 
-	public User(final int id, final String name, final String email, final String password) {
-		this.id = id;
-		this.name = name;
-		this.email = email;
-		this.password = password;
-	}
-
+    public User(
+        final int id,
+        final String name,
+        final String email,
+        final String password
+    ) {
+        this.id = id;
+        this.name = name;
+        this.email = email;
+        this.password = password;
+    }
 }
