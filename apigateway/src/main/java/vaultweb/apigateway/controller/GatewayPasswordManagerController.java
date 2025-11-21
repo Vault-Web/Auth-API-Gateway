@@ -1,4 +1,3 @@
 package vaultweb.apigateway.controller;
 
-public class GatewayPasswordManagerController {
-}
+public class GatewayPasswordManagerController {}

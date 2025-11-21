@@ -23,6 +23,10 @@ jobs:
           java-version: "21"
           cache: "maven"
 
+      - name: Check code formatting
+        working-directory: ./apigateway
+        run: ./mvnw spotless:check
+
       - name: Build with Maven
         working-directory: ./apigateway
         run: ./mvnw verify -DskipTests
