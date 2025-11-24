@@ -1,4 +1,3 @@
 package vaultweb.apigateway.exceptions;
 
-public class GlobalExceptionHandler {
-}
+public class GlobalExceptionHandler {}

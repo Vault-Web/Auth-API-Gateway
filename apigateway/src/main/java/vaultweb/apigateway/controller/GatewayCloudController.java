@@ -1,4 +1,3 @@
 package vaultweb.apigateway.controller;
 
-public class GatewayCloudController {
-}
+public class GatewayCloudController {}

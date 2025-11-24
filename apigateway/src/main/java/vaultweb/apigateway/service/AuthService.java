@@ -1,4 +1,3 @@
 package vaultweb.apigateway.service;
 
-public class AuthService {
-}
+public class AuthService {}
