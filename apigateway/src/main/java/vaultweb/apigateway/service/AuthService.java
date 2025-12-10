@@ -31,12 +31,13 @@ public class AuthService {
         if (userRepository.existsByEmail(request.email()))
             throw new RuntimeException("User with email " + request.email() + " already exists");
         // check username exists
-         if (userRepository.existsByUsername(request.username()))
-             throw new RuntimeException("User with username " + request.username() + " already exists");
+        if (userRepository.existsByUsername(request.username()))
+            throw new RuntimeException("User with username " + request.username() + " already exists");
         // create-user and save
         User user = userRepository.save(User.builder()
                 .email(request.email())
                 .name(request.name())
+                .username(request.username())
                 .password(BcryptUtil.encode(request.password()))
                 .build());
         return UserDetails.builder().email(user.getEmail()).name(user.getName()).build();
@@ -51,7 +52,7 @@ public class AuthService {
      */
     public AuthResponse login(LoginRequest request) {
         // find user by email
-        User user = userRepository.findByEmail(request.email())
+        User user = userRepository.findByEmailOrUsername(request.emailUsername(), request.emailUsername())
                 .orElseThrow(() -> new RuntimeException("Invalid email or password"));
         // check password
         if (!BcryptUtil.matches(request.password(), user.getPassword()))
