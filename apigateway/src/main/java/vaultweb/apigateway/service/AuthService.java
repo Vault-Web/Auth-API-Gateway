@@ -3,15 +3,21 @@ package vaultweb.apigateway.service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import vaultweb.apigateway.dto.UserDetails;
+import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
+import vaultweb.apigateway.dto.response.AuthResponse;
+import vaultweb.apigateway.model.RefreshToken;
 import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.UserRepository;
 import vaultweb.apigateway.util.BcryptUtil;
+import vaultweb.apigateway.util.JwtUtil;
 
 @Service
 @RequiredArgsConstructor
 public class AuthService {
     private final UserRepository userRepository;
+    private final RefreshTokenService refreshTokenService;
+    private final JwtUtil jwtUtil;
 
     /**
      * Registers a new user based on the provided registration request.
@@ -33,7 +39,28 @@ public class AuthService {
         return UserDetails.builder().email(user.getEmail()).name(user.getName()).build();
     }
 
-
+    /**
+     * Authenticates a user based on the provided login request.
+     *
+     * @param request The login request containing email and password.
+     * @return AuthResponse containing access and refresh tokens.
+     * @throws RuntimeException if the email or password is invalid.
+     */
+    public AuthResponse login(LoginRequest request) {
+        // find user by email
+        User user = userRepository.findByEmail(request.email())
+                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+        // check password
+        if (!BcryptUtil.matches(request.password(), user.getPassword()))
+            throw new RuntimeException("Invalid email or password");
+        // gen auth-token
+        String accessToken = jwtUtil.generateToken(user.getEmail());
+        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
+        return AuthResponse.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken.getToken())
+                .build();
+    }
 
 
 }

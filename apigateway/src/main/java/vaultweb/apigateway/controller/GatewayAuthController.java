@@ -11,7 +11,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import vaultweb.apigateway.dto.UserDetails;
+import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
+import vaultweb.apigateway.dto.response.AuthResponse;
 import vaultweb.apigateway.service.AuthService;
 
 @RestController
@@ -26,9 +28,10 @@ public class GatewayAuthController {
         return "My Data!";
     }
 
+    @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public String login() {
-        return "login";
+    public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+        return authService.login(loginRequest);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
