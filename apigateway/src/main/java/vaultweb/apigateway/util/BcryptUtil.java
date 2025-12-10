@@ -16,7 +16,7 @@ public class BcryptUtil {
    * @param password to be encoded
    * @return hashed version of the password
    */
-  public String encode(final String password) {
+  public static String encode(final String password) {
     return encoder.encode(password);
   }
 
@@ -27,7 +27,7 @@ public class BcryptUtil {
    * @param hashedPassword from database
    * @return true if the passwords are the same
    */
-  public boolean matches(final String password, final String hashedPassword) {
+  public static boolean matches(final String password, final String hashedPassword) {
     return encoder.matches(password, hashedPassword);
   }
 }
