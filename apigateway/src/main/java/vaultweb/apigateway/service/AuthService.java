@@ -1,3 +1,9 @@
 package vaultweb.apigateway.service;
 
-public class AuthService {}
+import org.springframework.stereotype.Service;
+
+@Service
+public class AuthService {
+    // get auth details --> get-user-id from security-context
+
+}

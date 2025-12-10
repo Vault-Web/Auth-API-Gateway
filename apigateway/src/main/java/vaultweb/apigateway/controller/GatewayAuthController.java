@@ -1,61 +1,65 @@
 package vaultweb.apigateway.controller;
 
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import vaultweb.apigateway.service.AuthService;
 
 @RestController
 @RequestMapping("/auth")
+@RequiredArgsConstructor
 public class GatewayAuthController {
+    private final AuthService authService;
 
-  @GetMapping("/me")
-  public String getMyData() {
-    return "My Data!";
-  }
+    @GetMapping("/me")
+    public String getMyData() {
+        return "My Data!";
+    }
 
-  @PostMapping("/login")
-  public String login() {
-    return "login";
-  }
+    @PostMapping("/login")
+    public String login() {
+        return "login";
+    }
 
-  @PostMapping("/register")
-  public String register() {
-    return "register";
-  }
+    @PostMapping("/register")
+    public String register() {
+        return "register";
+    }
 
-  @PostMapping("/logout")
-  public String logout() {
-    return "logout";
-  }
+    @PostMapping("/logout")
+    public String logout() {
+        return "logout";
+    }
 
-  @PostMapping("change-username")
-  public String changeUsername() {
-    return "changeUsername";
-  }
+    @PostMapping("change-username")
+    public String changeUsername() {
+        return "changeUsername";
+    }
 
-  @PostMapping("change-email")
-  public String changeEmail() {
-    return "changeEmail";
-  }
+    @PostMapping("change-email")
+    public String changeEmail() {
+        return "changeEmail";
+    }
 
-  @PostMapping("change-password")
-  public String changePassword() {
-    return "changePassword";
-  }
+    @PostMapping("change-password")
+    public String changePassword() {
+        return "changePassword";
+    }
 
-  @PostMapping("/switch-jwt")
-  public String switchJwtToken() {
-    return "switchJwtToken";
-  }
+    @PostMapping("/switch-jwt")
+    public String switchJwtToken() {
+        return "switchJwtToken";
+    }
 
-  @PostMapping("/reset-password")
-  public String resetPassword() {
-    return "resetPassword";
-  }
+    @PostMapping("/reset-password")
+    public String resetPassword() {
+        return "resetPassword";
+    }
 
-  @PostMapping("/verify-email")
-  public String verifyEmail() {
-    return "verifyEmail";
-  }
+    @PostMapping("/verify-email")
+    public String verifyEmail() {
+        return "verifyEmail";
+    }
 }
