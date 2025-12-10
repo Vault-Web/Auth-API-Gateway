@@ -1,7 +1,6 @@
 package vaultweb.apigateway.service;
 
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import vaultweb.apigateway.model.RefreshToken;
@@ -19,7 +18,7 @@ import java.util.UUID;
 @Service
 @RequiredArgsConstructor
 public class RefreshTokenService {
-    private RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Value("${jwt.refresh.expiration:604800000}") // 7 days
     private Long refreshExpiration;
