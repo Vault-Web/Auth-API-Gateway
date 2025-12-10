@@ -10,6 +10,8 @@ public record UserRegistrationRequest(
         String email,
         @NotEmpty(message = "name is required")
         String name,
+        @NotEmpty(message = "username is required")
+        String username,
         @NotEmpty(message = "password is required")
         @Pattern(regexp = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%^&+=])(?=\\S+$).{8,}$",
                 message = "password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one digit, and one special character")
