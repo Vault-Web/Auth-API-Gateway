@@ -40,7 +40,7 @@ public class AuthService {
                 .username(request.username())
                 .password(BcryptUtil.encode(request.password()))
                 .build());
-        return UserDetails.builder().email(user.getEmail()).name(user.getName()).build();
+        return UserDetails.builder().email(user.getEmail()).name(user.getName()).username(user.getUsername()).build();
     }
 
     /**
@@ -63,6 +63,15 @@ public class AuthService {
         return AuthResponse.builder()
                 .accessToken(accessToken)
                 .refreshToken(refreshToken.getToken())
+                .build();
+    }
+
+    // get user-details
+    public UserDetails getUserDetails() {
+        return UserDetails.builder()
+                .email("demo@gmail.com")
+                .name("john doe")
+                .username("doe-contributor")
                 .build();
     }
 

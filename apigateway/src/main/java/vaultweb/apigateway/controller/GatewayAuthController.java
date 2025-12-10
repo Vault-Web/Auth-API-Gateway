@@ -23,9 +23,10 @@ import vaultweb.apigateway.service.AuthService;
 public class GatewayAuthController {
     private final AuthService authService;
 
+    @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
-    public String getMyData() {
-        return "My Data!";
+    public UserDetails getMyData() {
+        return authService.getUserDetails();
     }
 
     @ResponseStatus(HttpStatus.OK)
