@@ -1,5 +1,6 @@
 package vaultweb.apigateway.util;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
 import java.util.Date;
+import java.util.function.Function;
 
 @Component
 public class JwtUtil {
@@ -29,11 +31,14 @@ public class JwtUtil {
     public String generateToken(String email) {
         return Jwts.builder()
                 .subject(email)
+                //todo discuss roles?
+                .claim("roles", "user")
                 .issuedAt(new Date())
                 .expiration(new Date(System.currentTimeMillis() + jwtExpiration))
                 .signWith(secretKey)
                 .compact();
     }
+
 
     /**
      * Validates the given JWT token.
@@ -49,5 +54,42 @@ public class JwtUtil {
         } catch (JwtException | IllegalArgumentException e) {
             return false;
         }
+    }
+
+    /**
+     * Extracts the email from the given JWT token.
+     *
+     * @param token the JWT token
+     * @return the email extracted from the token
+     */
+    public String extractEmail(String token) {
+        return extractClaim(token, Claims::getSubject);
+    }
+
+    /**
+     * Extracts a specific claim from the given JWT token using the provided claims resolver function.
+     *
+     * @param token          the JWT token
+     * @param claimsResolver the function to extract the desired claim from the claims
+     * @param <T>            the type of the claim to be extracted
+     * @return the extracted claim
+     */
+    private <T> T extractClaim(String token, Function<Claims, T> claimsResolver) {
+        final Claims claims = extractAllClaims(token);
+        return claimsResolver.apply(claims);
+    }
+
+    /**
+     * Extracts all claims from the given JWT token.
+     *
+     * @param token the JWT token
+     * @return the claims contained in the token
+     */
+    private Claims extractAllClaims(String token) {
+        return Jwts.parser()
+                .verifyWith(secretKey)
+                .build()
+                .parseSignedClaims(token)
+                .getPayload();
     }
 }
