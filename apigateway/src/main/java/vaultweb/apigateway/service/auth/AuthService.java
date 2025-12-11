@@ -1,4 +1,4 @@
-package vaultweb.apigateway.service;
+package vaultweb.apigateway.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
