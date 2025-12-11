@@ -41,18 +41,37 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(DefaultException.class)
     Mono<ResponseEntity<ErrorResponse>> handleDefaultException(DefaultException ex, ServerHttpRequest request) {
         log.error(ex.getMessage(), ex);
+        HttpStatus status = mapExceptionLevelToHttpStatus(ex.getLevel());
         return Mono.just(ResponseEntity
-                .status(HttpStatus.BAD_REQUEST)
+                .status(status)
                 .body(
                         new ErrorResponse(
                                 ex.getMessage(),
                                 new Timestamp(System.currentTimeMillis()),
                                 request.getURI().getPath(),
-                                HttpStatus.BAD_REQUEST.toString()
+                                status.toString()
                         )
                 ));
     }
 
+    /**
+     * Maps DefaultException level to appropriate HttpStatus.
+     */
+    private HttpStatus mapExceptionLevelToHttpStatus(String level) {
+        if (level == null) {
+            return HttpStatus.BAD_REQUEST;
+        }
+        switch (level) {
+            case "AUTHENTICATION_EXCEPTION":
+                return HttpStatus.UNAUTHORIZED;
+            case "TIMEOUT_EXCEPTION":
+                return HttpStatus.GATEWAY_TIMEOUT;
+            case "HTTP_ERROR_EXCEPTION":
+                return HttpStatus.BAD_GATEWAY;
+            default:
+                return HttpStatus.BAD_REQUEST;
+        }
+    }
     @ExceptionHandler(ConstraintViolationException.class)
     Mono<ResponseEntity<ErrorResponse>> handleConstraintViolation(ConstraintViolationException ex, ServerHttpRequest request) {
         log.error(ex.getMessage(), ex);
