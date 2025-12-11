@@ -6,6 +6,8 @@ import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
 import vaultweb.apigateway.dto.response.UserDetails;
+import vaultweb.apigateway.exceptions.DefaultException;
+import vaultweb.apigateway.exceptions.dto.DefaultExceptionLevels;
 import vaultweb.apigateway.model.RefreshToken;
 import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.UserRepository;
@@ -26,13 +28,13 @@ public class AuthService {
      * @return UserDetails of the newly registered user.
      * @throws RuntimeException if a user with the given email already exists.
      */
-    public UserDetails registerUser(UserRegistrationRequest request) {
+    public UserDetails registerUser(UserRegistrationRequest request) throws DefaultException {
         // check if user exists by email
         if (userRepository.existsByEmail(request.email()))
-            throw new RuntimeException("User with email " + request.email() + " already exists");
+            throw new DefaultException("User with email " + request.email() + " already exists");
         // check username exists
         if (userRepository.existsByUsername(request.username()))
-            throw new RuntimeException("User with username " + request.username() + " already exists");
+            throw new DefaultException("User with username " + request.username() + " already exists");
         // create-user and save
         User user = userRepository.save(User.builder()
                 .email(request.email())
@@ -50,13 +52,13 @@ public class AuthService {
      * @return AuthResponse containing access and refresh tokens.
      * @throws RuntimeException if the email or password is invalid.
      */
-    public AuthResponse login(LoginRequest request) {
+    public AuthResponse login(LoginRequest request) throws DefaultException {
         // find user by email
         User user = userRepository.findByEmailOrUsername(request.emailUsername(), request.emailUsername())
-                .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+                .orElseThrow(() -> new DefaultException("Invalid email or password", DefaultExceptionLevels.AUTHENTICATION_EXCEPTION));
         // check password
         if (!BcryptUtil.matches(request.password(), user.getPassword()))
-            throw new RuntimeException("Invalid email or password");
+            throw new DefaultException("Invalid email or password", DefaultExceptionLevels.AUTHENTICATION_EXCEPTION);
         // gen auth-token
         String accessToken = jwtUtil.generateToken(user.getUsername());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);

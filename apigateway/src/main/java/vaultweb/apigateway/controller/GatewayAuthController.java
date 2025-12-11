@@ -14,6 +14,7 @@ import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
 import vaultweb.apigateway.dto.response.UserDetails;
+import vaultweb.apigateway.exceptions.DefaultException;
 import vaultweb.apigateway.service.AuthService;
 
 @RestController
@@ -31,13 +32,13 @@ public class GatewayAuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) {
+    public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) throws DefaultException {
         return authService.login(loginRequest);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public UserDetails register(@Valid @RequestBody UserRegistrationRequest request) {
+    public UserDetails register(@Valid @RequestBody UserRegistrationRequest request) throws DefaultException {
         return authService.registerUser(request);
     }
 
