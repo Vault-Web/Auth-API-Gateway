@@ -9,6 +9,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import reactor.core.publisher.Mono;
+import vaultweb.apigateway.exceptions.dto.DefaultExceptionLevels;
 
 import java.sql.Timestamp;
 import java.util.stream.Collectors;
@@ -57,20 +58,16 @@ public class GlobalExceptionHandler {
     /**
      * Maps DefaultException level to appropriate HttpStatus.
      */
-    private HttpStatus mapExceptionLevelToHttpStatus(String level) {
+    private HttpStatus mapExceptionLevelToHttpStatus(DefaultExceptionLevels level) {
         if (level == null) {
             return HttpStatus.BAD_REQUEST;
         }
-        switch (level) {
-            case "AUTHENTICATION_EXCEPTION":
-                return HttpStatus.UNAUTHORIZED;
-            case "TIMEOUT_EXCEPTION":
-                return HttpStatus.GATEWAY_TIMEOUT;
-            case "HTTP_ERROR_EXCEPTION":
-                return HttpStatus.BAD_GATEWAY;
-            default:
-                return HttpStatus.BAD_REQUEST;
-        }
+        return switch (level) {
+            case DefaultExceptionLevels.AUTHENTICATION_EXCEPTION -> HttpStatus.UNAUTHORIZED;
+            case DefaultExceptionLevels.TIMEOUT_EXCEPTION -> HttpStatus.GATEWAY_TIMEOUT;
+            case DefaultExceptionLevels.HTTP_ERROR_EXCEPTION -> HttpStatus.BAD_GATEWAY;
+            default -> HttpStatus.BAD_REQUEST;
+        };
     }
     @ExceptionHandler(ConstraintViolationException.class)
     Mono<ResponseEntity<ErrorResponse>> handleConstraintViolation(ConstraintViolationException ex, ServerHttpRequest request) {
