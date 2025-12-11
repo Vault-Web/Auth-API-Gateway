@@ -2,10 +2,10 @@ package vaultweb.apigateway.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import vaultweb.apigateway.dto.UserDetails;
 import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
+import vaultweb.apigateway.dto.response.UserDetails;
 import vaultweb.apigateway.model.RefreshToken;
 import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.UserRepository;
@@ -58,7 +58,7 @@ public class AuthService {
         if (!BcryptUtil.matches(request.password(), user.getPassword()))
             throw new RuntimeException("Invalid email or password");
         // gen auth-token
-        String accessToken = jwtUtil.generateToken(user.getEmail());
+        String accessToken = jwtUtil.generateToken(user.getUsername());
         RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
         return AuthResponse.builder()
                 .accessToken(accessToken)

@@ -25,12 +25,12 @@ public class JwtUtil {
     /**
      * Generates a JWT token for the given email and name.
      *
-     * @param email the email of the user
+     * @param username the username of the user
      * @return the generated JWT token
      */
-    public String generateToken(String email) {
+    public String generateToken(String username) {
         return Jwts.builder()
-                .subject(email)
+                .subject(username)
                 //todo discuss roles?
                 .claim("roles", "user")
                 .issuedAt(new Date())
@@ -62,7 +62,7 @@ public class JwtUtil {
      * @param token the JWT token
      * @return the email extracted from the token
      */
-    public String extractEmail(String token) {
+    public String extractSubject(String token) {
         return extractClaim(token, Claims::getSubject);
     }
 

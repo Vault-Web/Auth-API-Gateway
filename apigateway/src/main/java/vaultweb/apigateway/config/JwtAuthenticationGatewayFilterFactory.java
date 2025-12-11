@@ -7,12 +7,7 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.web.server.ServerWebExchange;
 import reactor.core.publisher.Mono;
-import vaultweb.apigateway.dto.UserDetails;
-import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.util.JwtUtil;
-
-import java.io.IOException;
-import java.util.Collections;
 
 public class JwtAuthenticationGatewayFilterFactory extends AbstractGatewayFilterFactory<JwtAuthenticationGatewayFilterFactory.Config> {
     private final JwtUtil jwtUtil;
@@ -43,16 +38,16 @@ public class JwtAuthenticationGatewayFilterFactory extends AbstractGatewayFilter
                     return onError(exchange, "Invalid or expired token", HttpStatus.UNAUTHORIZED);
                 }
 
-                String email = jwtUtil.extractEmail(token);
+                String subject = jwtUtil.extractSubject(token);
 
                 // Add user info to request headers for downstream services
                 ServerHttpRequest modifiedRequest = request.mutate()
-                        .header("X-User-Email", email)
+                        .header("X-User-Name", subject)
                         .build();
 
                 return chain.filter(exchange.mutate().request(modifiedRequest).build())
                         // add user-email to context for further usage in reactive flows
-                        .contextWrite(ctx -> ctx.put("userEmail", email));
+                        .contextWrite(ctx -> ctx.put("userEmail", subject));
             } catch (Exception e) {
                 return onError(exchange, "Token validation failed: " + e.getMessage(), HttpStatus.UNAUTHORIZED);
             }
