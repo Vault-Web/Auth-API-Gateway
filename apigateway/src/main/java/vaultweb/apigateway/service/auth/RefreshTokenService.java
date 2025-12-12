@@ -4,6 +4,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import reactor.core.publisher.Mono;
+import vaultweb.apigateway.exceptions.DefaultException;
+import vaultweb.apigateway.exceptions.dto.DefaultExceptionLevels;
 import vaultweb.apigateway.model.RefreshToken;
 import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.RefreshTokenRepository;
@@ -31,12 +33,15 @@ public class RefreshTokenService {
      * @return the created refresh token
      */
     public Mono<RefreshToken> createRefreshToken(User user) {
-        RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUserId(user.getId());
-        //todo better refresh token generation
-        refreshToken.setToken(UUID.randomUUID().toString());
-        refreshToken.setExpiryDate(Instant.now().plusMillis(refreshExpiration));
-        return refreshTokenRepository.save(refreshToken);
+        return refreshTokenRepository.deleteByUserId(user.getId())
+                .then(Mono.defer(() -> {
+                    RefreshToken refreshToken = new RefreshToken();
+                    refreshToken.setUserId(user.getId());
+                    refreshToken.setToken(UUID.randomUUID().toString());
+                    refreshToken.setExpiryDate(Instant.now().plusMillis(refreshExpiration));
+                    refreshToken.setCreatedAt(Instant.now());
+                    return refreshTokenRepository.save(refreshToken);
+                }));
     }
 
     /**
@@ -46,11 +51,13 @@ public class RefreshTokenService {
      * @return the valid refresh token
      * @throws RuntimeException if the token has expired
      */
-    public RefreshToken verifyExpiration(RefreshToken token) {
+    public Mono<RefreshToken> verifyExpiration(RefreshToken token) {
         if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
-            refreshTokenRepository.delete(token);
-            throw new RuntimeException("Refresh token expired");
+            return refreshTokenRepository.delete(token)
+                    .then(Mono.error(new DefaultException(
+                            "Refresh token has expired. Please login again.",
+                            DefaultExceptionLevels.AUTHENTICATION_EXCEPTION)));
         }
-        return token;
+        return Mono.just(token);
     }
 }

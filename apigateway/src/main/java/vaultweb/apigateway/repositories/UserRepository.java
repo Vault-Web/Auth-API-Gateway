@@ -9,5 +9,5 @@ import java.util.Optional;
 public interface UserRepository extends ReactiveCrudRepository<User, Integer> {
     Mono<Boolean> existsByEmail(String email);
     Mono<Boolean> existsByUsername(String username);
-    Mono<Optional<User>> findByEmailOrUsername(String email, String username);
+    Mono<User> findByEmailOrUsername(String email, String username);
 }
