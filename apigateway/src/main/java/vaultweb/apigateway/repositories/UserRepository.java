@@ -1,12 +1,13 @@
 package vaultweb.apigateway.repositories;
 
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.reactive.ReactiveCrudRepository;
+import reactor.core.publisher.Mono;
 import vaultweb.apigateway.model.User;
 
 import java.util.Optional;
 
-public interface UserRepository extends JpaRepository<User, Integer> {
-    Boolean existsByEmail(String email);
-    Boolean existsByUsername(String username);
-    Optional<User> findByEmailOrUsername(String email, String username);
+public interface UserRepository extends ReactiveCrudRepository<User, Integer> {
+    Mono<Boolean> existsByEmail(String email);
+    Mono<Boolean> existsByUsername(String username);
+    Mono<Optional<User>> findByEmailOrUsername(String email, String username);
 }

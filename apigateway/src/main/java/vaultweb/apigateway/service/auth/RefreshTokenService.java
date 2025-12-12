@@ -3,6 +3,7 @@ package vaultweb.apigateway.service.auth;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import vaultweb.apigateway.model.RefreshToken;
 import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.RefreshTokenRepository;
@@ -29,9 +30,9 @@ public class RefreshTokenService {
      * @param user the user for whom the refresh token is created
      * @return the created refresh token
      */
-    public RefreshToken createRefreshToken(User user) {
+    public Mono<RefreshToken> createRefreshToken(User user) {
         RefreshToken refreshToken = new RefreshToken();
-        refreshToken.setUser(user);
+        refreshToken.setUserId(user.getId());
         //todo better refresh token generation
         refreshToken.setToken(UUID.randomUUID().toString());
         refreshToken.setExpiryDate(Instant.now().plusMillis(refreshExpiration));

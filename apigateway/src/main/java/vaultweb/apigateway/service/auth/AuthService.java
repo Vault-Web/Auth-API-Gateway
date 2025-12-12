@@ -2,13 +2,13 @@ package vaultweb.apigateway.service.auth;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
 import vaultweb.apigateway.dto.response.UserDetails;
 import vaultweb.apigateway.exceptions.DefaultException;
 import vaultweb.apigateway.exceptions.dto.DefaultExceptionLevels;
-import vaultweb.apigateway.model.RefreshToken;
 import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.UserRepository;
 import vaultweb.apigateway.util.BcryptUtil;
@@ -28,22 +28,32 @@ public class AuthService {
      * @return UserDetails of the newly registered user.
      * @throws RuntimeException if a user with the given email already exists.
      */
-    public UserDetails registerUser(UserRegistrationRequest request) throws DefaultException {
-        // check if user exists by email
-        if (userRepository.existsByEmail(request.email()))
-            throw new DefaultException("User with email " + request.email() + " already exists");
-        // check username exists
-        if (userRepository.existsByUsername(request.username()))
-            throw new DefaultException("User with username " + request.username() + " already exists");
-        // create-user and save
-        User user = userRepository.save(User.builder()
-                .email(request.email())
-                .name(request.name())
-                .username(request.username())
-                .password(BcryptUtil.encode(request.password()))
-                .build());
-        return UserDetails.builder().email(user.getEmail()).name(user.getName()).username(user.getUsername()).build();
+    public Mono<UserDetails> registerUser(UserRegistrationRequest request) {
+        return userRepository.existsByEmail(request.email())
+                .flatMap(emailExists -> {
+                    if (emailExists) {
+                        return Mono.error(new DefaultException("User with email " + request.email() + " already exists"));
+                    }
+                    return userRepository.existsByUsername(request.username());
+                })
+                .flatMap(usernameExists -> {
+                    if (usernameExists) {
+                        return Mono.error(new DefaultException("User with username " + request.username() + " already exists"));
+                    }
+                    return userRepository.save(User.builder()
+                            .email(request.email())
+                            .name(request.name())
+                            .username(request.username())
+                            .password(BcryptUtil.encode(request.password()))
+                            .build());
+                })
+                .map(user -> UserDetails.builder()
+                        .email(user.getEmail())
+                        .name(user.getName())
+                        .username(user.getUsername())
+                        .build());
     }
+
 
     /**
      * Authenticates a user based on the provided login request.
@@ -52,20 +62,22 @@ public class AuthService {
      * @return AuthResponse containing access and refresh tokens.
      * @throws RuntimeException if the email or password is invalid.
      */
-    public AuthResponse login(LoginRequest request) throws DefaultException {
+    public Mono<AuthResponse> login(LoginRequest request) throws DefaultException {
+        // start chain by finding user by email or username
         // find user by email
-        User user = userRepository.findByEmailOrUsername(request.emailUsername(), request.emailUsername())
-                .orElseThrow(() -> new DefaultException("Invalid email or password", DefaultExceptionLevels.AUTHENTICATION_EXCEPTION));
-        // check password
-        if (!BcryptUtil.matches(request.password(), user.getPassword()))
-            throw new DefaultException("Invalid email or password", DefaultExceptionLevels.AUTHENTICATION_EXCEPTION);
-        // gen auth-token
-        String accessToken = jwtUtil.generateToken(user.getUsername());
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(user);
-        return AuthResponse.builder()
-                .accessToken(accessToken)
-                .refreshToken(refreshToken.getToken())
-                .build();
+        return userRepository.findByEmailOrUsername(request.emailUsername(), request.emailUsername()).flatMap(user -> Mono.fromCallable(() -> {
+            // check if user is present
+            if (user.isEmpty())
+                throw new DefaultException("Invalid email or password", DefaultExceptionLevels.AUTHENTICATION_EXCEPTION);
+            return user.get();
+        })).flatMap(user -> {
+            // gen auth-token
+            String accessToken = jwtUtil.generateToken(user.getUsername());
+            return refreshTokenService.createRefreshToken(user).map(refreshToken -> AuthResponse.builder()
+                    .accessToken(accessToken)
+                    .refreshToken(refreshToken.getToken())
+                    .build());
+        });
     }
 
     // get user-details

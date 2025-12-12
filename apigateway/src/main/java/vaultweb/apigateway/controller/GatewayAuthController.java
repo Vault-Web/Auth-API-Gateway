@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import reactor.core.publisher.Mono;
 import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
@@ -32,13 +33,13 @@ public class GatewayAuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public AuthResponse login(@Valid @RequestBody LoginRequest loginRequest) throws DefaultException {
+    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) throws DefaultException {
         return authService.login(loginRequest);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public UserDetails register(@Valid @RequestBody UserRegistrationRequest request) throws DefaultException {
+    public Mono<UserDetails> register(@Valid @RequestBody UserRegistrationRequest request) throws DefaultException {
         return authService.registerUser(request);
     }
 
