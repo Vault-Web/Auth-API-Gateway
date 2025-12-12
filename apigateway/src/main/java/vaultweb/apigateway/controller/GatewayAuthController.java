@@ -27,7 +27,7 @@ public class GatewayAuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @GetMapping("/me")
-    public UserDetails getMyData() {
+    public Mono<UserDetails> getMyData() {
         return authService.getUserDetails();
     }
 

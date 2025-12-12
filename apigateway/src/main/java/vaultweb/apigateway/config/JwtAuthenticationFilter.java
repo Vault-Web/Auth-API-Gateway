@@ -72,6 +72,9 @@ import lombok.NonNull;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
@@ -80,6 +83,7 @@ import reactor.core.publisher.Mono;
 import vaultweb.apigateway.util.JwtUtil;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter implements WebFilter {
@@ -112,7 +116,15 @@ public class JwtAuthenticationFilter implements WebFilter {
                         .build())
                 .build();
 
-        return chain.filter(modifiedExchange);
+        // for controllers downstream
+        Authentication authentication = new UsernamePasswordAuthenticationToken(
+                username,
+                null,
+                Collections.emptyList()
+        );
+
+        return chain.filter(exchange)
+                .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
     }
 
     private Mono<Void> sendErrorResponse(ServerWebExchange exchange, String message, String errorCode) {

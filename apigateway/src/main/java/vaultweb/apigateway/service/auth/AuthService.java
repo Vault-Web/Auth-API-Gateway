@@ -13,8 +13,7 @@ import vaultweb.apigateway.model.User;
 import vaultweb.apigateway.repositories.UserRepository;
 import vaultweb.apigateway.util.BcryptUtil;
 import vaultweb.apigateway.util.JwtUtil;
-
-import java.util.Objects;
+import vaultweb.apigateway.util.SecurityContextUtil;
 
 @Service
 @RequiredArgsConstructor
@@ -22,6 +21,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final RefreshTokenService refreshTokenService;
     private final JwtUtil jwtUtil;
+    private final SecurityContextUtil securityContextUtil;
 
     /**
      * Registers a new user based on the provided registration request.
@@ -85,12 +85,15 @@ public class AuthService {
     }
 
     // get user-details
-    public UserDetails getUserDetails() {
-        return UserDetails.builder()
-                .email("demo@gmail.com")
-                .name("john doe")
-                .username("doe-contributor")
-                .build();
+    public Mono<UserDetails> getUserDetails() {
+        return securityContextUtil.getAuthenticatedUsername()
+                .flatMap(username -> userRepository.findByUsername(username)
+                        .switchIfEmpty(Mono.error(new DefaultException("username from token has no registered user", DefaultExceptionLevels.AUTHENTICATION_EXCEPTION)))
+                        .map(user -> UserDetails.builder()
+                                .email(user.getEmail())
+                                .name(user.getName())
+                                .username(user.getUsername())
+                                .build()));
     }
 
 
