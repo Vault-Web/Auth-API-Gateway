@@ -15,7 +15,6 @@ import vaultweb.apigateway.dto.request.LoginRequest;
 import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
 import vaultweb.apigateway.dto.response.UserDetails;
-import vaultweb.apigateway.exceptions.DefaultException;
 import vaultweb.apigateway.service.auth.AuthService;
 
 @RestController
