@@ -7,20 +7,19 @@ import org.springframework.web.server.WebFilterChain;
 
 @Configuration
 public class JwtGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
+  private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public JwtGatewayFilterFactory(JwtAuthenticationFilter jwtAuthenticationFilter) {
-        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    }
+  public JwtGatewayFilterFactory(JwtAuthenticationFilter jwtAuthenticationFilter) {
+    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
+  }
 
-    @Override
-    public GatewayFilter apply(Object config) {
-        return (exchange, chain) -> {
-            // Create a WebFilterChain adapter from GatewayFilterChain
-            WebFilterChain webFilterChain = webExchange -> chain.filter(exchange);
+  @Override
+  public GatewayFilter apply(Object config) {
+    return (exchange, chain) -> {
+      // Create a WebFilterChain adapter from GatewayFilterChain
+      WebFilterChain webFilterChain = webExchange -> chain.filter(exchange);
 
-            return jwtAuthenticationFilter.filter(exchange, webFilterChain);
-        };
-    }
+      return jwtAuthenticationFilter.filter(exchange, webFilterChain);
+    };
+  }
 }
-
