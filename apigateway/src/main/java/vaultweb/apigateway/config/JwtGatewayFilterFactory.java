@@ -3,28 +3,24 @@ package vaultweb.apigateway.config;
 import org.springframework.cloud.gateway.filter.GatewayFilter;
 import org.springframework.cloud.gateway.filter.factory.AbstractGatewayFilterFactory;
 import org.springframework.context.annotation.Configuration;
-import vaultweb.apigateway.util.JwtUtil;
+import org.springframework.web.server.WebFilterChain;
 
 @Configuration
 public class JwtGatewayFilterFactory extends AbstractGatewayFilterFactory<Object> {
-    private final JwtUtil jwtUtil;
+    private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
-    public JwtGatewayFilterFactory(JwtUtil jwtUtil) {
-        this.jwtUtil = jwtUtil;
+    public JwtGatewayFilterFactory(JwtAuthenticationFilter jwtAuthenticationFilter) {
+        this.jwtAuthenticationFilter = jwtAuthenticationFilter;
     }
 
     @Override
     public GatewayFilter apply(Object config) {
         return (exchange, chain) -> {
-            String username = jwtUtil.extractSubject(
-                    exchange.getRequest().getHeaders().getFirst("Authorization").substring(7)
-            );
+            // Create a WebFilterChain adapter from GatewayFilterChain
+            WebFilterChain webFilterChain = webExchange -> chain.filter(exchange);
 
-            return chain.filter(exchange.mutate()
-                    .request(exchange.getRequest().mutate()
-                            .header("X-Auth-Username", username)
-                            .build())
-                    .build());
+            return jwtAuthenticationFilter.filter(exchange, webFilterChain);
         };
     }
 }
+

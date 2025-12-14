@@ -1,6 +1,7 @@
 package vaultweb.apigateway.config;
 
 import lombok.NonNull;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.buffer.DataBuffer;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -8,6 +9,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -15,12 +17,16 @@ import reactor.core.publisher.Mono;
 import vaultweb.apigateway.util.JwtUtil;
 
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Collections;
 
 @Component
 public class JwtAuthenticationFilter implements WebFilter {
-
+    @Value("${auth.publicUrls}")
+    private String[] publicEndpoints;
     private final JwtUtil jwtUtil;
+    private final AntPathMatcher pathMatcher = new AntPathMatcher();
+
 
     public JwtAuthenticationFilter(JwtUtil jwtUtil) {
         this.jwtUtil = jwtUtil;
@@ -28,7 +34,17 @@ public class JwtAuthenticationFilter implements WebFilter {
 
     @Override
     @NonNull
-    public Mono<Void> filter(ServerWebExchange exchange, @NonNull WebFilterChain chain) {
+    public Mono<Void> filter(@NonNull ServerWebExchange exchange, @NonNull WebFilterChain chain) {
+        String path = exchange.getRequest().getURI().getPath();
+        // Skip JWT validation for public endpoints
+        if (Arrays.stream(publicEndpoints).anyMatch(pattern ->
+                pathMatcher.match(pattern, path))) {
+            return chain.filter(exchange);
+        }
+        return authenticateAndFilter(exchange, chain);
+    }
+
+    public Mono<Void> authenticateAndFilter(ServerWebExchange exchange, WebFilterChain chain) {
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
@@ -42,13 +58,7 @@ public class JwtAuthenticationFilter implements WebFilter {
         }
 
         String username = jwtUtil.extractSubject(token);
-        ServerWebExchange modifiedExchange = exchange.mutate()
-                .request(exchange.getRequest().mutate()
-                        .header("X-Auth-Username", username)
-                        .build())
-                .build();
 
-        // for controllers downstream
         Authentication authentication = new UsernamePasswordAuthenticationToken(
                 username,
                 null,
@@ -78,6 +88,4 @@ public class JwtAuthenticationFilter implements WebFilter {
 
         return exchange.getResponse().writeWith(Mono.just(buffer));
     }
-
 }
-
