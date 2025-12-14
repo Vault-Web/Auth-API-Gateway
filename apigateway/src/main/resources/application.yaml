@@ -2,16 +2,12 @@ spring:
   application:
     name: apigateway
   r2dbc:
-    url: jdbc:postgresql://localhost:5432/mydatabase
+    url: r2dbc:postgresql://localhost:5432/mydatabase
     username: postgres
     password: password
 
 jwt:
   secret: b9f4f7c2-6d8a-4a41-9e3a-99c42e67d9ab-53f1fa3434aa12af9df7e98e894e-change-me
-#spring.r2dbc.url=jdbc:postgresql://localhost:5432/mydatabase
-#spring.datasource.url=
-#spring.datasource.username=postgres
-#spring.datasource.password=password
-#spring.jpa.hibernate.ddl-auto=update
-#spring.jpa.database-platform=org.hibernate.dialect.PostgreSQLDialect
-#jwt.secret=b9f4f7c2-6d8a-4a41-9e3a-99c42e67d9ab-53f1fa3434aa12af9df7e98e894e-change-me
+
+auth:
+  publicUrls: /auth/login,/auth/register,/auth/switch-jwt,/auth/reset-password
