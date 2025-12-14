@@ -33,13 +33,13 @@ public class GatewayAuthController {
 
     @ResponseStatus(HttpStatus.OK)
     @PostMapping("/login")
-    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) throws DefaultException {
+    public Mono<AuthResponse> login(@Valid @RequestBody LoginRequest loginRequest) {
         return authService.login(loginRequest);
     }
 
     @ResponseStatus(HttpStatus.CREATED)
     @PostMapping("/register")
-    public Mono<UserDetails> register(@Valid @RequestBody UserRegistrationRequest request) throws DefaultException {
+    public Mono<UserDetails> register(@Valid @RequestBody UserRegistrationRequest request){
         return authService.registerUser(request);
     }
 

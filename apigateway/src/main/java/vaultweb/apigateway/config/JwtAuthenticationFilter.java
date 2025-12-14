@@ -48,13 +48,13 @@ public class JwtAuthenticationFilter implements WebFilter {
         String authHeader = exchange.getRequest().getHeaders().getFirst("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            return sendErrorResponse(exchange, "Missing or invalid Authorization header", "AUTHENTICATION_EXCEPTION");
+            return sendErrorResponse(exchange, "Missing or invalid Authorization header");
         }
 
         String token = authHeader.substring(7);
 
         if (!jwtUtil.validateToken(token)) {
-            return sendErrorResponse(exchange, "Invalid or expired token", "AUTHENTICATION_EXCEPTION");
+            return sendErrorResponse(exchange, "Invalid or expired token");
         }
 
         String username = jwtUtil.extractSubject(token);
@@ -69,7 +69,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 .contextWrite(ReactiveSecurityContextHolder.withAuthentication(authentication));
     }
 
-    private Mono<Void> sendErrorResponse(ServerWebExchange exchange, String message, String errorCode) {
+    private Mono<Void> sendErrorResponse(ServerWebExchange exchange, String message) {
         exchange.getResponse().setStatusCode(HttpStatus.UNAUTHORIZED);
         exchange.getResponse().getHeaders().setContentType(MediaType.APPLICATION_JSON);
 
@@ -79,7 +79,7 @@ public class JwtAuthenticationFilter implements WebFilter {
                 message,
                 new java.sql.Timestamp(System.currentTimeMillis()),
                 path,
-                errorCode
+                "AUTHENTICATION_EXCEPTION"
         );
 
         DataBuffer buffer = exchange.getResponse()
