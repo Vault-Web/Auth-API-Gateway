@@ -146,4 +146,21 @@ public class AuthService {
                                                                 .username(user.getUsername())
                                                                 .build()));
     }
+
+
+    // logout user by deleting refresh token
+    public Mono<Void> logout() {
+        return securityContextUtil
+                .getAuthenticatedUsername()
+                .flatMap(username -> {
+                    return userRepository
+                            .findByUsername(username)
+                            .switchIfEmpty(
+                                    Mono.error(
+                                            new DefaultException(
+                                                    "username from token has no registered user",
+                                                    DefaultExceptionLevels.AUTHENTICATION_EXCEPTION)));
+                })
+                .flatMap(user -> refreshTokenRepository.deleteByUserId(user.getId()));
+    }
 }

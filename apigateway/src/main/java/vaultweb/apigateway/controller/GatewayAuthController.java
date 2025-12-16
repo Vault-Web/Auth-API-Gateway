@@ -4,6 +4,7 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,7 +19,6 @@ import vaultweb.apigateway.dto.request.UserRegistrationRequest;
 import vaultweb.apigateway.dto.response.AuthResponse;
 import vaultweb.apigateway.dto.response.UserDetails;
 import vaultweb.apigateway.service.auth.AuthService;
-import vaultweb.apigateway.service.auth.RefreshTokenService;
 
 @RestController
 @RequestMapping("/auth")
@@ -45,9 +45,16 @@ public class GatewayAuthController {
         return authService.registerUser(request);
     }
 
-    @PostMapping("/logout")
-    public String logout() {
-        return "logout";
+    @ResponseStatus(HttpStatus.CREATED)
+    @GetMapping("/switch-jwt/{token}")
+    public Mono<AuthResponse> switchJwtToken(@PathVariable @Valid @NotEmpty String token) {
+        return authService.switchToken(token);
+    }
+
+    @ResponseStatus(HttpStatus.OK)
+    @DeleteMapping("/logout")
+    public Mono<Void> logout() {
+        return authService.logout();
     }
 
     @PostMapping("change-username")
@@ -65,10 +72,6 @@ public class GatewayAuthController {
         return "changePassword";
     }
 
-    @GetMapping("/switch-jwt/{token}")
-    public Mono<AuthResponse> switchJwtToken(@PathVariable @Valid @NotEmpty String token) {
-        return authService.switchToken(token);
-    }
 
     @PostMapping("/reset-password")
     public String resetPassword() {
