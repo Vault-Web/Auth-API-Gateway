@@ -1,6 +1,8 @@
 package vaultweb.apigateway.service.auth;
 
+import java.security.SecureRandom;
 import java.time.Instant;
+import java.util.Base64;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +44,7 @@ public class RefreshTokenService {
                 () -> {
                   RefreshToken refreshToken = new RefreshToken();
                   refreshToken.setUserId(user.getId());
-                  refreshToken.setToken(UUID.randomUUID().toString());
+                  refreshToken.setToken(generateRefreshToken());
                   refreshToken.setExpiryDate(Instant.now().plusMillis(refreshExpiration));
                   refreshToken.setCreatedAt(Instant.now());
                   return refreshTokenRepository.save(refreshToken);
@@ -68,4 +70,12 @@ public class RefreshTokenService {
     }
     return Mono.just(token);
   }
+
+    private static String generateRefreshToken() {
+        SecureRandom secureRandom = new SecureRandom();
+        Base64.Encoder base64Encoder = Base64.getUrlEncoder().withoutPadding();
+        byte[] randomBytes = new byte[32];
+        secureRandom.nextBytes(randomBytes);
+        return base64Encoder.encodeToString(randomBytes);
+    }
 }
