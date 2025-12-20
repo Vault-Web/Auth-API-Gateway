@@ -9,21 +9,40 @@
         - 📁 **apigateway**
           - 📄 [ApiGatewayApplication.java](apigateway/src/main/java/vaultweb/apigateway/ApiGatewayApplication.java)
           - 📁 **config**
-            - 📄 [GatewayAuthConfig.java](apigateway/src/main/java/vaultweb/apigateway/config/GatewayAuthConfig.java)
+            - 📄 [JwtAuthenticationFilter.java](apigateway/src/main/java/vaultweb/apigateway/config/JwtAuthenticationFilter.java)
+            - 📄 [JwtGatewayFilterFactory.java](apigateway/src/main/java/vaultweb/apigateway/config/JwtGatewayFilterFactory.java)
+            - 📄 [SecurityConfig.java](apigateway/src/main/java/vaultweb/apigateway/config/SecurityConfig.java)
           - 📁 **controller**
             - 📄 [GatewayAuthController.java](apigateway/src/main/java/vaultweb/apigateway/controller/GatewayAuthController.java)
             - 📄 [GatewayCloudController.java](apigateway/src/main/java/vaultweb/apigateway/controller/GatewayCloudController.java)
             - 📄 [GatewayPasswordManagerController.java](apigateway/src/main/java/vaultweb/apigateway/controller/GatewayPasswordManagerController.java)
+          - 📁 **dto**
+            - 📁 **request**
+              - 📄 [LoginRequest.java](apigateway/src/main/java/vaultweb/apigateway/dto/request/LoginRequest.java)
+              - 📄 [UserRegistrationRequest.java](apigateway/src/main/java/vaultweb/apigateway/dto/request/UserRegistrationRequest.java)
+            - 📁 **response**
+              - 📄 [AuthResponse.java](apigateway/src/main/java/vaultweb/apigateway/dto/response/AuthResponse.java)
+              - 📄 [UserDetails.java](apigateway/src/main/java/vaultweb/apigateway/dto/response/UserDetails.java)
           - 📁 **exceptions**
+            - 📄 [DefaultException.java](apigateway/src/main/java/vaultweb/apigateway/exceptions/DefaultException.java)
             - 📄 [GlobalExceptionHandler.java](apigateway/src/main/java/vaultweb/apigateway/exceptions/GlobalExceptionHandler.java)
+            - 📁 **dto**
+              - 📄 [DefaultExceptionLevels.java](apigateway/src/main/java/vaultweb/apigateway/exceptions/dto/DefaultExceptionLevels.java)
           - 📁 **model**
+            - 📄 [RefreshToken.java](apigateway/src/main/java/vaultweb/apigateway/model/RefreshToken.java)
             - 📄 [User.java](apigateway/src/main/java/vaultweb/apigateway/model/User.java)
+          - 📁 **repositories**
+            - 📄 [RefreshTokenRepository.java](apigateway/src/main/java/vaultweb/apigateway/repositories/RefreshTokenRepository.java)
+            - 📄 [UserRepository.java](apigateway/src/main/java/vaultweb/apigateway/repositories/UserRepository.java)
           - 📁 **service**
-            - 📄 [AuthService.java](apigateway/src/main/java/vaultweb/apigateway/service/AuthService.java)
             - 📄 [RoutingService.java](apigateway/src/main/java/vaultweb/apigateway/service/RoutingService.java)
+            - 📁 **auth**
+              - 📄 [AuthService.java](apigateway/src/main/java/vaultweb/apigateway/service/auth/AuthService.java)
+              - 📄 [RefreshTokenService.java](apigateway/src/main/java/vaultweb/apigateway/service/auth/RefreshTokenService.java)
           - 📁 **util**
             - 📄 [BcryptUtil.java](apigateway/src/main/java/vaultweb/apigateway/util/BcryptUtil.java)
             - 📄 [JwtUtil.java](apigateway/src/main/java/vaultweb/apigateway/util/JwtUtil.java)
+            - 📄 [SecurityContextUtil.java](apigateway/src/main/java/vaultweb/apigateway/util/SecurityContextUtil.java)
   - 📁 **test**
     - 📁 **java**
       - 📁 **vaultweb**
