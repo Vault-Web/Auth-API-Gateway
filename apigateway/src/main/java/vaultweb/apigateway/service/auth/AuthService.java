@@ -161,12 +161,12 @@ public class AuthService {
   }
 
   /**
-   * Logs out the currently authenticated user by deleting all refresh tokens
-   * associated with the user identified in the security context.
+   * Logs out the currently authenticated user by deleting all refresh tokens associated with the
+   * user identified in the security context.
    *
-   * <p>If no user can be resolved from the current authentication context, a
-   * {@link DefaultException} with level
-   * {@link DefaultExceptionLevels#AUTHENTICATION_EXCEPTION} is emitted.
+   * <p>If no user can be resolved from the current authentication context, a {@link
+   * DefaultException} with level {@link DefaultExceptionLevels#AUTHENTICATION_EXCEPTION} is
+   * emitted.
    *
    * @return a {@link Mono} that completes when the user's refresh tokens have been deleted
    */
