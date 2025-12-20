@@ -47,7 +47,7 @@ public class GatewayAuthController {
     return authService.registerUser(request);
   }
 
-  @ResponseStatus(HttpStatus.CREATED)
+  @ResponseStatus(HttpStatus.OK)
   @GetMapping("/switch-jwt/{token}")
   public Mono<AuthResponse> switchJwtToken(@PathVariable @Valid @NotEmpty String token) {
     return authService.switchToken(token);
