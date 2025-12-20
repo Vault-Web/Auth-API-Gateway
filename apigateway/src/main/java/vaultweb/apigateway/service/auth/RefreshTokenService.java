@@ -62,8 +62,8 @@ public class RefreshTokenService {
    * Verifies if the given refresh token has expired.
    *
    * @param token the refresh token to verify
-   * @return the valid refresh token
-   * @throws RuntimeException if the token has expired
+   * @return a {@link Mono} that emits the valid refresh token if it has not expired,
+   *     or completes with a {@link DefaultException} error signal if the token has expired
    */
   public Mono<RefreshToken> verifyExpiration(RefreshToken token) {
     if (token.getExpiryDate().compareTo(Instant.now()) < 0) {
