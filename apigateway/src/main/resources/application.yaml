@@ -7,7 +7,7 @@ spring:
     password: password
   sql:
     init:
-      mode: always
+      mode: never  # Use 'always' only in dev/test profiles; handle prod schema via migrations
       platform: postgresql
 
 jwt:
