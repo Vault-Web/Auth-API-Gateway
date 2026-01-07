@@ -2,7 +2,7 @@ spring:
   application:
     name: apigateway
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/mydatabase
+    url: r2dbc:postgresql://localhost:5432/auth_gateway_db
     username: postgres
     password: password
   sql:
@@ -14,4 +14,4 @@ jwt:
   secret: b9f4f7c2-6d8a-4a41-9e3a-99c42e67d9ab-53f1fa3434aa12af9df7e98e894e-change-me
 
 auth:
-  publicUrls: /auth/login,/auth/register,/auth/reset-password,/auth/switch-jwt/**
+  publicUrls: /auth/login,/auth/register,/auth/reset-password,/auth/refresh/**

@@ -39,7 +39,7 @@ A modern reactive Spring Boot API Gateway that provides JWT-based authentication
    **Option B: Use existing PostgreSQL**
 
    Make sure PostgreSQL is running on `localhost:5432` with:
-   - Database: `mydatabase`
+   - Database: `auth_gateway_db`
    - Username: `postgres`
    - Password: `password`
 
@@ -63,7 +63,7 @@ A modern reactive Spring Boot API Gateway that provides JWT-based authentication
 |--------|----------|-------------|
 | POST | `/auth/register` | Register a new user |
 | POST | `/auth/login` | Login with email/username and password |
-| GET | `/auth/switch-jwt/{token}` | Refresh access token using refresh token |
+| GET | `/auth/refresh/{token}` | Refresh access token using refresh token |
 
 ### Protected Endpoints (Requires JWT)
 
@@ -114,7 +114,7 @@ The application uses the following default database settings (matching the `dock
 ```yaml
 spring:
   r2dbc:
-    url: r2dbc:postgresql://localhost:5432/mydatabase
+    url: r2dbc:postgresql://localhost:5432/auth_gateway_db
     username: postgres
     password: password
 ```
@@ -159,11 +159,11 @@ The application automatically creates the required database tables on startup:
 spring:
   sql:
     init:
-      mode: always        # Run schema.sql on every startup
+      mode: never        # Use 'always' only in dev/test profiles; handle prod schema via migrations
       platform: postgresql
 ```
 
-No manual database setup is required for local development!
+**Note:** For production environments, use proper database migration tools like Flyway or Liquibase instead of SQL initialization mode.
 
 ## Password Requirements
 
