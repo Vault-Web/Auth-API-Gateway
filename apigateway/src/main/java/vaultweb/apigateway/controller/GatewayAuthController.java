@@ -49,7 +49,7 @@ public class GatewayAuthController {
 
   @ResponseStatus(HttpStatus.OK)
   @GetMapping("/refresh/{token}")
-  public Mono<AuthResponse> switchJwtToken(@PathVariable @Valid @NotEmpty String token) {
+  public Mono<AuthResponse> refreshToken(@PathVariable @Valid @NotEmpty String token) {
     return authService.switchToken(token);
   }
 
