@@ -1,0 +1,18 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: auth-gateway-db
+    # NOTE: These credentials are intended for local development only.
+    # For any shared or production-like environment, override POSTGRES_USER,
+    # POSTGRES_PASSWORD, and POSTGRES_DB with secure, environment-specific values.
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: auth_gateway_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
